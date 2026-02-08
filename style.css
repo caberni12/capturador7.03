@@ -420,4 +420,23 @@
     outline:2px solid #0ea5e9;
   }
   
+  /* ===== SCANNER MÁS COMPACTO (MÓVIL) ===== */
+#scannerBox{
+    height:260px;          /* 🔽 más pequeño */
+    max-width:360px;       /* no gigante */
+    margin-left:auto;
+    margin-right:auto;
+  }
+  
+  /* Marco de escaneo centrado y más chico */
+  .scan-frame{
+    inset:18%;
+    border-radius:14px;
+  }
+  
+  /* Línea de escaneo SOLO dentro del marco */
+  .scan-line{
+    left:18%;
+    right:18%;
+  }
   

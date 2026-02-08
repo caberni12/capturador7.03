@@ -61,50 +61,56 @@ function previewIngreso(){
  <span class='small'>${ubicacion.value||"SIN UBICACIÓN"} | ${operador.value||"-"} | Cant: ${cantidad.value}</span></div>`;
 }
 
-/* ===================== SCANNER ===================== */
-function scanCodigo(){modo="codigo";abrirScanner();}
-function scanUbicacion(){modo="ubicacion";abrirScanner();}
-function toggleScanner(){scannerBox.style.display==="none"?abrirScanner():cerrarScanner();}
-
 function abrirScanner(){
- if(scanner) return;
- scannerBox.style.display="block";
- scanner=new Html5Qrcode("scannerBox");
- scanner.start(
-  {facingMode:"environment"},
-  {
-    fps:12,
-    qrbox:260,
-    formatsToSupport:[
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.EAN_13
-    ]
-  },
-  txt=>{
-    beep.play();
-    navigator.vibrate?.(200);
-    if(modo==="codigo"){codigo.value=txt;buscarDescripcion();previewIngreso();}
-    if(modo==="ubicacion"){ubicacion.value=txt;localStorage.setItem("ubicacion",txt);previewIngreso();}
-    cerrarScanner();
-  }
- );
+  if(scanner) return;
+
+  scannerBox.style.display = "block";
+  scanner = new Html5Qrcode("scannerBox");
+
+  scanner.start(
+    { facingMode: "environment" },
+    {
+      fps: 12,
+
+      // 🎯 CUADRO DE ESCANEO MÁS PEQUEÑO Y DINÁMICO
+      qrbox: (vw, vh) => {
+        const size = Math.min(vw, vh) * 0.55; // 🔽 más pequeño
+        return {
+          width: size,
+          height: size
+        };
+      },
+
+      // ✅ FORMATOS SOPORTADOS
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.EAN_13
+      ]
+    },
+
+    txt => {
+      beep.play();
+      navigator.vibrate?.(200);
+
+      if(modo === "codigo"){
+        codigo.value = txt;
+        buscarDescripcion();
+        previewIngreso();
+      }
+
+      if(modo === "ubicacion"){
+        ubicacion.value = txt;
+        localStorage.setItem("ubicacion", txt);
+        previewIngreso();
+      }
+
+      cerrarScanner();
+    }
+  );
 }
 
-function cerrarScanner(){
- if(!scanner) return;
- scanner.stop().then(()=>{
-  scanner.clear();
-  scanner=null;
-  scannerBox.style.display="none";
- });
-}
-
-function toggleTorch(){
- torch=!torch;
- scanner?.applyVideoConstraints({advanced:[{torch}]}).catch(()=>{});
-}
 
 /* ===================== GUARDAR ===================== */
 function ingresar(){
